@@ -21,6 +21,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import org.destinationsol.common.SolMath;
 import org.destinationsol.game.Faction;
+import org.destinationsol.game.SolCam;
 import org.destinationsol.game.SolGame;
 import org.destinationsol.game.drawables.Drawable;
 import org.destinationsol.game.gun.GunMount;
@@ -106,7 +107,7 @@ public class Hull {
 
     public void update(SolGame game, ItemContainer container, Pilot provider, SolShip ship, SolShip nearestEnemy) {
         setParamsFromBody();
-        boolean controlsEnabled = ship.isControlsEnabled();
+        boolean controlsEnabled = ship.isControlsEnabled() && !SolCam.DIRECT_CAM_CONTROL;
 
         if (engine != null) {
             engine.update(myAngle, game, provider, myBody, mySpd, ship, controlsEnabled, myMass, this);
@@ -164,7 +165,7 @@ public class Hull {
         this.engine = new ShipEngine(engine);
     }
 
-    public void setParticleEmitters(SolGame game, SolShip ship, Engine engine) {
+    public void setParticleEmitters(SolGame game, SolShip ship) {
         List<Drawable> drawables = ship.getDrawables();
         // Remove the old particle emitters and their associated drawables
         if (!particleEmitters.isEmpty()) {
@@ -175,13 +176,11 @@ public class Hull {
             particleEmitters.clear();
         }
         // Add the new particle emitters and their associated drawables
-        if (engine != null) {
-            config.getParticleEmitters().forEach(pes -> particleEmitters.add(new DSParticleEmitter(game, pes, ship)));
-            List<Drawable> particleEmitterDrawables = new ArrayList<>();
-            particleEmitters.forEach(pe -> particleEmitterDrawables.addAll(pe.getDrawables()));
-            drawables.addAll(particleEmitterDrawables);
-            game.getDrawableManager().addAll(particleEmitterDrawables);
-        }
+        config.getParticleEmitters().forEach(pes -> particleEmitters.add(new DSParticleEmitter(game, pes, ship)));
+        List<Drawable> particleEmitterDrawables = new ArrayList<>();
+        particleEmitters.forEach(pe -> particleEmitterDrawables.addAll(pe.getDrawables()));
+        drawables.addAll(particleEmitterDrawables);
+        game.getDrawableManager().addAll(particleEmitterDrawables);
     }
 
     public float getAngle() {
