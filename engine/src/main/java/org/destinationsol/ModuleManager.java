@@ -27,17 +27,15 @@ import org.destinationsol.game.DebugOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terasology.assets.ResourceUrn;
-import org.terasology.module.Module;
-import org.terasology.module.ModuleEnvironment;
-import org.terasology.module.ModuleFactory;
-import org.terasology.module.ModulePathScanner;
-import org.terasology.module.ModuleRegistry;
-import org.terasology.module.TableModuleRegistry;
+import org.terasology.module.*;
 import org.terasology.module.sandbox.StandardPermissionProviderFactory;
 
+import java.io.FileReader;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 public class ModuleManager {
@@ -50,6 +48,17 @@ public class ModuleManager {
         try {
             URI engineClasspath = getClass().getProtectionDomain().getCodeSource().getLocation().toURI();
             Module engineModule = new ModuleFactory().createModule(Paths.get(engineClasspath));
+
+
+            List<Path> classPaths = new ArrayList<Path>();
+            classPaths.add(Paths.get(engineClasspath));
+            classPaths.add(Paths.get(".").resolve("modules").resolve("core").resolve("assets"));
+            Path met = Paths.get(".").resolve("modules").resolve("core").resolve("module.json");
+            ModuleMetadata metaData = new ModuleMetadataJsonAdapter().read(new FileReader(met.toString()));
+            Module classPathEngineModule = new ModuleFactory().createClasspathModule(classPaths, metaData);
+
+        //    engineModule = classPathEngineModule;
+
 
             registry = new TableModuleRegistry();
             Path modulesRoot;

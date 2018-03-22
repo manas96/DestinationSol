@@ -39,6 +39,8 @@ import org.destinationsol.game.ship.hulls.Hull;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.destinationsol.common.SolMath.approach;
+
 public class SolGun {
     private final LightSource myLightSource;
     private final Vector2 myRelPos;
@@ -89,7 +91,7 @@ public class SolGun {
             }
         }
 
-        myCurrAngleVar = SolMath.approach(myCurrAngleVar, myItem.config.maxAngleVar, myItem.config.angleVarPerShot);
+        myCurrAngleVar = approach(myCurrAngleVar, myItem.config.maxAngleVar, myItem.config.angleVarPerShot);
         boolean multiple = cc.projectilesPerShot > 1;
         for (int i = 0; i < cc.projectilesPerShot; i++) {
             float bulletAngle = gunAngle;
@@ -140,7 +142,7 @@ public class SolGun {
             Vector2 gunSpeed = creator.getSpeed();
             shoot(gunSpeed, game, gunAngle, muzzlePos, faction, creator,  hull);
         } else {
-            myCurrAngleVar = SolMath.approach(myCurrAngleVar, myItem.config.minAngleVar, myItem.config.angleVarDamp * ts);
+            myCurrAngleVar = approach(myCurrAngleVar, myItem.config.minAngleVar, myItem.config.angleVarDamp * ts);
         }
         if (myLightSource != null) {
             myLightSource.update(shot, baseAngle, game);
